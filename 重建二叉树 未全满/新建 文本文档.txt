@@ -1,0 +1,47 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+bool flag = true;
+int depth = 0;
+string createPreOrder(string& inOrder,string& postOrder, int currentDepth) {
+    if (postOrder.empty()) {
+        return "";
+    }
+    char root = postOrder.back();
+    int rootIdx = inOrder.find(root);
+    if (rootIdx == string::npos) {
+        flag = false;
+        return "INVALID";
+    }
+    if (inOrder.length() == currentDepth) {
+        depth = max(depth, currentDepth);
+    }
+    string leftInOrder = inOrder.substr(0, rootIdx);
+    string rightInOrder = inOrder.substr(rootIdx + 1);
+    string leftPostOrder = postOrder.substr(0, rootIdx);
+    string rightPostOrder = postOrder.substr(rootIdx, postOrder.size() - rootIdx - 1);
+
+    return root + createPreOrder(leftInOrder, leftPostOrder, currentDepth + 1) + createPreOrder(rightInOrder, rightPostOrder, currentDepth + 1);
+}
+
+int main() {
+    string inOrder, postOrder;
+    getline(cin, postOrder);
+    getline(cin, inOrder);
+    while (!inOrder.empty()&&!postOrder.empty()) {
+        string preOrder = createPreOrder(inOrder, postOrder, 1);
+        if (flag) {
+            cout << depth << endl;
+            cout << preOrder << endl;
+        }
+        else {
+            cout << "INVALID" << endl;
+        }
+        getline(cin, postOrder);
+        getline(cin, inOrder);
+        flag = true;
+    }
+    return 0;
+}

@@ -1,0 +1,77 @@
+#include <iostream>
+#include <queue>
+#include <map>
+#include <vector>
+using namespace std;
+
+bool flag = true;
+map<int, vector<int>> graph;
+vector<int> degree;
+queue<int> p;
+queue<int> result;
+vector<int> done;
+
+void add(int a, int b) {
+    graph[a].push_back(b);
+}
+
+void act() {
+    while (!p.empty()&&flag) {
+        int m = p.front();
+        result.push(m);
+        p.pop();
+        for (auto q : graph[m]) {
+            degree[q]--;
+        }
+        for (int i = 0; i < degree.size(); ++i) {
+            if (degree[i] == 0&&done[i]) {
+                p.push(i);
+                done[i] = false;
+                break;
+            }
+        }
+    }
+}
+
+int main() {
+    int n, e;
+    cin >> n >> e;
+
+    degree.resize(n, 0);
+    done.resize(n, true);
+
+    int a, b;
+    for (int i = 0; i < e; i++) {
+        cin >> a >> b;
+        add(a, b);
+        degree[b]++;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (degree[i] == 0 && done[i]) {
+            p.push(i);
+            done[i] = false;
+            break;
+        }
+    }
+    if (p.empty()) {
+        flag = false;
+    }
+    act();
+    for (int i = 0; i < n&&flag; i++) {
+        if (degree[i] < 0) {
+            flag = false;
+        }
+    }
+
+    if (!flag) {
+        cout << "unworkable project" << endl;
+    }
+    else {
+        while (!result.empty()) {
+            cout << result.front() << ' ';
+            result.pop();
+        }
+    }
+    return 0;
+}

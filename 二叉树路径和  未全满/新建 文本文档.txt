@@ -1,0 +1,69 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+queue<int> path;
+
+void pushpath(int val) {
+    path.push(val);
+}
+
+struct tree {
+    int val;
+    tree* left;
+    tree* right;
+    tree(int value) : val(value), left(nullptr), right(nullptr) {}
+};
+
+void maketree(int value, tree*& root) {
+    int leftVal, rightVal;
+    cin >> leftVal;
+    if (leftVal != 0) {
+        root->left = new tree(leftVal);
+        maketree(leftVal, root->left);
+    }
+    cin >> rightVal;
+    if (rightVal != 0) {
+        root->right = new tree(rightVal);
+        maketree(rightVal, root->right);
+    }
+}
+
+int maxSum(tree* root) {
+    if (root == nullptr) {
+        return 0;
+    }
+    int leftMax = maxSum(root->left);
+    int rightMax = maxSum(root->right);
+    int currentPathSum = root->val + max(0, leftMax) + max(0, rightMax);
+    return root->val + max(0, max(leftMax, rightMax));
+}
+
+void compareAndPush(tree* root) {
+    if (root == nullptr) {
+        return;
+    }
+    pushpath(root->val);
+    int leftMax = maxSum(root->left);
+    int rightMax = maxSum(root->right);
+    if (leftMax > rightMax) {
+        compareAndPush(root->left);
+    }
+    else {
+        compareAndPush(root->right);
+    }
+}
+int main() {
+    int rootVal;
+    cin >> rootVal;
+    tree* head = new tree(rootVal);
+    maketree(rootVal, head);
+    int result = maxSum(head);
+    cout << result << endl;
+    compareAndPush(head);
+    while (!path.empty()) {
+        cout << path.front() << " ";
+        path.pop();
+    }
+    return 0;
+}

@@ -1,0 +1,62 @@
+#include <cstdio>
+#include <vector>
+#include <queue>
+using namespace std;
+
+vector<vector<pair<int, int>>> graph;
+
+void add(int a, int b, int c) {
+    graph[a].push_back({b, c});
+    graph[b].push_back({a, c});
+}
+
+int prim(int start, int n) {
+    int sum = 0;
+    vector<bool> done(n + 1, false);
+    vector<int> dist(n + 1, 1e9);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+    pq.push({0, start});
+    dist[start] = 0;
+
+    while (!pq.empty()) {
+        int a = pq.top().second;
+        int cost = pq.top().first;
+        pq.pop();
+        if (done[a]) {
+            continue;
+        }
+
+        done[a] = true;
+        sum += cost;
+        for (auto& neighbor : graph[a]) {
+            int v = neighbor.first;
+            int weight = neighbor.second;
+            if (!done[v] && weight < dist[v]) {
+                dist[v] = weight;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return sum;
+}
+
+int main() {
+    int n, e;
+    scanf("%d%d", &n, &e);
+    graph.assign(n + 1, vector<pair<int, int>>());
+    for (int i = 0; i < n; i++) {
+        int t;
+        scanf("%d", &t);
+        add(i, n, t);
+    }
+    int a, b, c;
+    for (int i = 0; i < e; i++) {
+        scanf("%d%d%d", &a, &b, &c);
+        add(a, b, c);
+    }
+    int sum = prim(0, n);
+    printf("%d\n", sum);
+
+    return 0;
+}

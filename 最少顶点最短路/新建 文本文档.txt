@@ -1,0 +1,68 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <queue>
+using namespace std;
+
+map<int, vector<pair<int, int>>> graph;
+vector<queue<int>> node;
+
+void add(int a, int b, int c) {
+    graph[a].push_back({ b, c });
+}
+
+void dijkstra(vector<int>& length) {
+    length[0] = 0;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+    q.push({ 0, 0 });
+    while (!q.empty()) {
+        int a = q.top().second;
+        int b = q.top().first;
+        q.pop();
+        if (b > length[a]) continue;
+        for (const auto& next : graph[a]) {
+            int i = next.first;
+            int c = next.second;
+            if (length[a] + c < length[i]) {
+                length[i] = length[a] + c;
+                q.push({ length[i], i });
+                node[i] = node[a];
+                node[i].push(i);
+            }
+            else if (length[a] + c == length[i] && node[i].size() > node[a].size() + 1) {
+                node[i] = node[a];
+                node[i].push(i);
+            }
+        }
+    }
+}
+
+int main() {
+    int n, e;
+    cin >> n >> e;
+    vector<int> length(n, 99999);
+    node.resize(n);
+
+    int a, b, c;
+    for (int i = 0; i < e; i++) {
+        cin >> a >> b >> c;
+        add(a, b, c);
+    }
+
+    dijkstra(length);
+
+    for (int i = 1; i < n; ++i) {
+        if (length[i] == 99999) {
+            continue;
+        }
+        cout << "0";
+        while (!node[i].empty()) {
+            cout << "->" << node[i].front();
+            node[i].pop();
+        }
+        cout << endl;
+    }
+
+    return 0;
+}

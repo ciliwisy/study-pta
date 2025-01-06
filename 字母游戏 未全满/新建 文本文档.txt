@@ -1,0 +1,52 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string s;
+    int next1[100001];
+    int next2[100001];
+    string p;
+    while (cin >> s) {
+        p.resize(s.length());
+        int n = 0;
+        int i = 0, j = -1, k = 0;
+        for (i = s.length() - 1; i >= 0; i--) {
+            p[k] = s[i];
+            k++;
+        }
+        int mmax = 0, x = 0, maxx = 0;
+        i = 0;
+        next1[0] = -1;
+        while (i < s.length()) {
+            if (j == -1 || p[i] == p[j]) {
+                next1[++i] = ++j;
+                if (next1[i] > mmax) {
+                    mmax = next1[i];
+                }
+            }
+            else {
+                j = next1[j];
+            }
+        }
+        i = 0, j = -1;
+        next2[0] = -1;
+        while (i < s.length()) {
+            if (j == -1 || s[i] == s[j]) {
+                next2[++i] = ++j;
+                if (next2[i] > maxx) {
+                    maxx = next2[i];
+                }
+            }
+            else {
+                j = next2[j];
+            }
+        }
+        x = next2[maxx];
+        if (x < 0 || s.length() - 2 * x <= 0) x = 0;
+        int X;
+        X = mmax - x * 2 + s.length();
+        cout << X << endl;
+    }
+    return 0;
+}

@@ -1,0 +1,48 @@
+#include <iostream>
+#include <map>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+map<int, vector<int>> graph;
+map<int, bool> done;
+
+void add(int a,int b) {
+	graph[a].push_back(b);
+}
+
+void create(int n) {
+	for (int i = 0; i < n; i++) {
+		done[i] = false;
+	}
+}
+
+void DFS(int t) {
+	done[t] = true;
+	cout << t << ' ';
+	for (auto next : graph[t]) {
+		if (!done[next]) {
+			DFS(next);
+		}
+	}
+
+}
+int main() {
+	int n, e;
+	cin >> n >> e;
+	int a, b;
+	for (int i = 0; i < e; i++) {
+		cin >> a >> b;
+		add(a, b);
+	}
+	create(n);
+	for (auto& p : graph) {
+		sort(p.second.begin(), p.second.end());
+	}
+	for (int i = 0; i < n; i++) {
+		if (!done[i]) {
+			DFS(i);
+		}
+	}
+	return 0;
+}

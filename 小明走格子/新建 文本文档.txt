@@ -1,0 +1,23 @@
+#include<iostream>
+using namespace std;
+
+int main() {
+	int n;
+	int string[10000];
+	scanf("%d",&n);
+	for(int i = 0;i<n;i++){
+		scanf("%d",&string[i]);
+	}
+	int pace[100];
+	pace[0] = 1;
+	pace[1] = 1;
+	pace[2] = 2;
+	pace[3] = 4;
+	for (int i = 4; i <= 99; i++) {
+		pace[i] = pace[i - 1] + pace[i - 2] + pace[i - 3] + pace[i - 4];
+	}
+	for (int i = 0; i < n; i++) {
+		printf("%d\n",pace[string[i]]);
+	}
+	return 0;
+}

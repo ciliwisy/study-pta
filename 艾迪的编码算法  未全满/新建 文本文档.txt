@@ -1,0 +1,31 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int g(char c, string s) {
+    int count = 0;
+    int k;
+    for (int i = s.size() - 1; i >= 0; --i) {
+        if (s[i] == c) {
+            break;
+        }
+        if (s.find(s[i], i + 1) == string::npos) {
+            ++count;
+        }
+    }
+    return count;
+}
+char chr(char c, string s) {
+    return 'a' + g(c, s);
+}
+int main() {
+    string s;
+    cin >> s;
+    string a = "";
+    for (char c : s) {
+        a += chr(c, s);
+    }
+    string result = a;
+    cout << result << endl;
+    return 0;
+}

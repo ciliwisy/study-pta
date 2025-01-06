@@ -1,0 +1,46 @@
+#include <iostream>
+using namespace std;
+
+int depthnum[100] = { 0 };
+int maxdepth;
+
+struct tree {
+    char val;
+    tree* left;
+    tree* right;
+    int depth;
+    tree(char value,int dep) : val(value), left(nullptr), right(nullptr) ,depth(dep) {}
+};
+
+void maketree(char value, tree*& root, int depth) {
+    depth++;
+    maxdepth = max(maxdepth, depth);
+    char leftVal, rightVal;
+    cin >> leftVal;
+    if (leftVal != '#') {
+        root->left = new tree(leftVal,depth);
+        maketree(leftVal, root->left, depth);
+    }
+    cin >> rightVal;
+    if (rightVal != '#') {
+        root->right = new tree(rightVal,depth);
+        maketree(rightVal, root->right, depth);
+    }
+    if ((leftVal == '#' && rightVal != '#')||(leftVal != '#'&& rightVal == '#')) {
+        depthnum[depth]++;
+    }
+}
+
+int main() {
+    tree* head = nullptr;
+    char rootVal;
+    cin >> rootVal;
+    int depth = 0; 
+    head = new tree(rootVal,depth);
+    maketree(rootVal, head, depth);
+    for (int i = 1; i <= maxdepth; i++) {
+        cout << depthnum[i] << endl;
+    }
+
+    return 0;
+}

@@ -1,0 +1,71 @@
+#include <iostream>
+using namespace std;
+
+struct tree {
+    int val;
+    tree* left;
+    tree* right;
+    tree(int value) : val(value), left(nullptr), right(nullptr) {}
+};
+
+void maketree(int value, tree*& root) {
+    int leftVal, rightVal;
+    cin >> leftVal;
+    if (leftVal != 0) {
+        root->left = new tree(leftVal);
+        maketree(leftVal, root->left);
+    }
+    cin >> rightVal;
+    if (rightVal != 0) {
+        root->right = new tree(rightVal);
+        maketree(rightVal, root->right);
+    }
+}
+void preorder(tree* node) {
+    if (node == nullptr) {
+        return;
+    }
+    else {
+        cout << node->val << " ";
+        preorder(node->left);
+        preorder(node->right);
+    }
+}
+
+void inorder(tree* node) {
+    if (node == nullptr) {
+        return;
+    }
+    else {
+        inorder(node->left);
+        cout << node->val << " ";
+        inorder(node->right);
+    }
+}
+
+void postorder(tree* node) {
+    if (node == nullptr) {
+        return;
+    }
+    else {
+        postorder(node->left);
+        postorder(node->right);
+        cout << node->val << " ";
+    }
+}
+
+int main() {
+    tree* head = nullptr;
+    int rootVal;
+    cin >> rootVal;
+    head = new tree(rootVal);
+    maketree(rootVal, head);
+    preorder(head);
+    cout << endl;
+    inorder(head);
+    cout << endl;
+    postorder(head);
+    cout << endl;
+
+    return 0;
+}

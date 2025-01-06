@@ -1,0 +1,89 @@
+#include <iostream>
+using namespace std;
+
+bool flag = false;
+struct tree {
+    int val;
+    tree* left;
+    tree* right;
+    tree(int value) : val(value), left(nullptr), right(nullptr) {}
+};
+void maketree(int value, tree*& root) {
+    int leftVal, rightVal;
+    cin >> leftVal;
+    if (leftVal != 0) {
+        root->left = new tree(leftVal);
+        maketree(leftVal, root->left);
+    }
+    cin >> rightVal;
+    if (rightVal != 0) {
+        root->right = new tree(rightVal);
+        maketree(rightVal, root->right);
+    }
+}
+void dele(tree*& node) {
+    if (node == nullptr) {
+        return;
+    }
+    if (node->left != nullptr && node->left->val != 0) {
+        dele(node->left);
+    }
+    if (node->right != nullptr && node->right->val != 0) {
+        dele(node->right);
+    }
+    delete node;
+    node = nullptr;
+}
+void search(tree*& node, int tar) {
+    if (node == nullptr) {
+        return;
+    }
+    else {
+        if (node->left != nullptr && node->left->val == tar) {
+            dele(node->left);
+            flag = true;
+            return;
+        }
+        else if (node->right != nullptr && node->right->val == tar) {
+            dele(node->right);
+            flag = true;
+            return;
+        }
+        search(node->left, tar);
+        search(node->right, tar);
+    }
+}
+void inorder(tree* node) {
+    if (node == nullptr) {
+        return;
+    }
+    else {
+        inorder(node->left);
+        cout << node->val << " ";
+        inorder(node->right);
+    }
+}
+int main() {
+    tree* head = nullptr;
+    int rootVal;
+    cin >> rootVal;
+    head = new tree(rootVal);
+    maketree(rootVal, head);
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; ++i) {
+        flag = false;
+        int s;
+        cin >> s;
+        search(head, s);
+        if (!flag) {
+            cout << 0 << endl;
+        }
+        else {
+            inorder(head);
+            cout << endl;
+        }
+    }
+    dele(head);
+    return 0;
+}

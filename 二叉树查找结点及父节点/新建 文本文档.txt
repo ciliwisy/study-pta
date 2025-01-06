@@ -1,0 +1,59 @@
+#include <iostream>
+using namespace std;
+
+bool flag = false;
+struct tree {
+    int val;
+    tree* left;
+    tree* right;
+    tree(int value) : val(value), left(nullptr), right(nullptr) {}
+};
+void maketree(int value, tree*& root) {
+    int leftVal, rightVal;
+    cin >> leftVal;
+    if (leftVal != 0) {
+        root->left = new tree(leftVal);
+        maketree(leftVal, root->left);
+    }
+    cin >> rightVal;
+    if (rightVal != 0) {
+        root->right = new tree(rightVal);
+        maketree(rightVal, root->right);
+    }
+}
+void searchFather(tree* node, int tar) {
+    if (node == nullptr || flag) {
+        return;
+    }
+    else {
+        if ((node->left != nullptr && node->left->val == tar) ||
+            (node->right != nullptr && node->right->val == tar)) {
+            flag = true;
+            cout << node->val << endl;
+            return;
+        }
+        searchFather(node->left, tar);
+        searchFather(node->right, tar);
+    }
+}
+int main() {
+    tree* head = nullptr;
+    int rootVal;
+    cin >> rootVal;
+    head = new tree(rootVal);
+    maketree(rootVal, head);
+
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        flag = false;
+        int s;
+        cin >> s;
+        searchFather(head, s);
+        if (!flag) {
+            cout << 0 << endl;
+        }
+    }
+
+    return 0;
+}

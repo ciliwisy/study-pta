@@ -1,0 +1,73 @@
+#include <iostream>
+#include <stack>
+using namespace std;
+
+int depthnum[20] = { 0 };
+stack<int> Stack;
+
+struct tree {
+    int val;
+    tree* left;
+    tree* right;
+    int depth;
+    tree(int value, int dep) : val(value), left(nullptr), right(nullptr), depth(dep) {}
+};
+
+void maketree(int value, tree*& root, int depth, int m) {
+    depth++;
+    int leftVal, rightVal;
+    cin >> leftVal;
+    if (leftVal != 0) {
+        root->left = new tree(leftVal, depth);
+        maketree(leftVal, root->left, depth, m);
+        depthnum[depth]++;
+        if (depth == m) {
+            Stack.push(leftVal);
+        }
+    }
+    cin >> rightVal;
+    if (rightVal != 0) {
+        root->right = new tree(rightVal, depth);
+        maketree(rightVal, root->right, depth, m);
+        depthnum[depth]++;
+        if (depth == m) {
+            Stack.push(rightVal);
+        }
+    }
+    return;
+}
+
+int main() {
+    int m, k;
+    cin >> m >> k;
+    while (!cin.fail()) {
+        tree* head = nullptr;
+        int rootVal;
+        cin >> rootVal;
+        int depth = 0;
+        depthnum[0] = 0;
+        head = new tree(rootVal, depth);
+        maketree(rootVal, head, depth, m);
+
+        if (k > depthnum[m]) {
+            cout << 0 << endl;
+        }
+        else {
+            int result = 0;
+            for (int i = 0; i < k; i++) {
+                result = Stack.top();
+                Stack.pop();
+            }
+            cout << result << endl;
+        }
+
+        for (int i = 0; i < 20; i++) {
+            depthnum[i] = 0;
+        }
+        while (!Stack.empty()) {
+            Stack.pop();
+        }
+        cin >> m >> k;
+    }
+    return 0;
+}

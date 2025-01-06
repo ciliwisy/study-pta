@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+vector<vector<pair<int, int>>> graph;
+vector<int> lenght;
+
+void add(int a, int b, int c) {
+    graph[a].push_back(make_pair(b, c));
+    graph[b].push_back(make_pair(a, c));
+}
+
+int dijkstra(int start, int n) {
+    int sum = 0;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> p;
+    lenght.assign(n, 9999999);
+    lenght[start] = 0;
+    p.push({ 0, start });
+
+    while (!p.empty()) {
+        int a = p.top().second;
+        int b = p.top().first;
+        p.pop();
+        if (b > lenght[a]) {
+            continue;
+        }
+        for (auto next : graph[a]) {
+            int i = next.first;
+            int c = next.second;
+
+            if (lenght[a] + c < lenght[i]) {
+                lenght[i] = lenght[a] + c;
+                p.push({ lenght[i], i });
+            }
+        }
+    }
+    for (int i = 0; i < n; ++i) {
+        sum += lenght[i];
+    }
+    return sum;
+}
+
+int main() {
+    int n, e;
+    while (cin >> n >> e) {
+        int mindis = 9999999;
+        int t = 0;
+        graph.assign(n, vector<pair<int, int>>());
+
+        int a, b, c;
+        for (int i = 0; i < e; i++) {
+            cin >> a >> b >> c;
+            add(a, b, c);
+        }
+        for (int i = 0; i < n; i++) {
+            int s = dijkstra(i, n);
+            if (mindis > s) {
+                mindis = s;
+                t = i;
+            }
+        }
+        cout << t << endl;
+    }
+    return 0;
+}

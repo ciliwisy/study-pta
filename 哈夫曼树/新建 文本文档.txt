@@ -1,0 +1,120 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <map>
+#include <algorithm>
+using namespace std;
+
+map<char, int> frequence;
+string text;
+
+struct node {
+    char val;
+    int freq;
+    int order;
+    node* left;
+    node* right;
+    node(char value, int freq, int order) : val(value), freq(freq), order(order), left(nullptr), right(nullptr) {}
+    node(char value, int freq, int order, node* left, node* right) : val(value), freq(freq), order(order), left(left), right(right) {}
+};
+
+struct compare {
+    bool operator()(node* a, node* b) {
+        if (a->freq == b->freq) {
+            return a->order > b->order;
+        }
+        else {
+            return a->freq > b->freq;
+        }
+    }
+};
+
+bool comparesort(pair<char, string> a, pair<char, string> b) {
+    if (frequence[a.first] == frequence[b.first]) {
+        return text.find(a.first) < text.find(b.first);
+    }
+    return frequence[a.first] < frequence[b.first];
+}
+
+node* createh(string text) {
+    priority_queue<node*, vector<node*>, compare> pqueue;
+    for (auto n : frequence) {
+        pqueue.push(new node(n.first, n.second, text.find(n.first)));
+    }
+
+    while (pqueue.size() != 1) {
+        node* left = pqueue.top(); 
+        pqueue.pop();
+        node* right = pqueue.top(); 
+        pqueue.pop();
+        int add = left->freq + right->freq;
+        pqueue.push(new node('0', add, 10000, left, right));
+    }
+    return pqueue.top();
+}
+
+void code(node* root, string str, map<char, string>& H) {
+    if (root == nullptr)
+        return;
+
+    if (root->left == nullptr && root->right == nullptr) {
+        H[root->val] = str;
+    }
+    code(root->left, str + "0", H);
+    code(root->right, str + "1", H);
+}
+
+string explaincode(node* root, string str) {
+    string result;
+    node* node = root;
+    for (char c : str) {
+        if (c == '0') {
+            if (node->left ==nullptr && node->right != nullptr)
+                return "INVALID";
+            node = node->left;
+        }
+        else if (c == '1') {
+            if (node->left != nullptr && node->right ==nullptr)
+                return "INVALID";
+            node = node->right;
+        }
+        if (node->right == nullptr && node->left == nullptr) {
+            result += node->val;
+            node = root;
+        }
+    }
+    if (node != root)
+        return "INVALID";
+    else
+        return result;
+}
+
+int main() {
+    string codex;
+    map<char, string> h;
+    cin >> text;
+    for (char c : text) {
+        frequence[c]++;
+    }
+    node* root = createh(text);
+    code(root, "", h);
+    vector<pair<char, string>> code;
+    code.insert(code.end(), h.begin(), h.end());
+    sort(code.begin(), code.end(), comparesort);
+    int size = text.size();
+    int length = 0;
+    for (auto n : code) {
+        length += n.second.size() * frequence[n.first];
+    }
+    length = (length + 7) / 8;
+
+    cout << size << " " << length << endl;
+    for (auto n : code) {
+        cout << n.first << ":" << n.second << endl;
+    }
+    while (cin >> codex) {
+        string explain = explaincode(root, codex);
+        cout << explain << endl;
+    }
+    return 0;
+}

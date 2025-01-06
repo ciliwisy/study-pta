@@ -1,0 +1,169 @@
+#include <iostream>
+#include <queue>
+#include <map>
+#include <vector>
+using namespace std;
+
+bool flag = true;
+map<int, vector<pair<int, int>>> graph;
+vector<int> indegree;
+vector<int> outdegree;
+queue<int> p;
+queue<int> q;
+vector<int> done1;
+vector<int> done2;
+queue<int> result1;
+queue<int> result2;
+
+void add(int a, int b, int c) {
+    graph[a].push_back({ b,c });
+}
+
+void act() {
+    while (!p.empty() && flag) {
+        int m = p.front();
+        result1.push(m);
+        p.pop();
+        for (auto t : graph[m]) {
+            indegree[t.first]--;
+        }
+        for (size_t i = 1; i < indegree.size(); ++i) {
+            if (indegree[i] == 0 && done1[i]) {
+                p.push(i);
+                done1[i] = false;
+                break;
+            }
+        }
+    }
+    while (!q.empty() && flag) {
+        int n = q.front();
+        result2.push(n);
+        q.pop();
+        for (auto k : graph) {
+            for (const auto& s : k.second) {
+                if (s.first == n) {
+                    outdegree[k.first]--;
+                }
+            }
+        }
+        for (size_t i = 1; i < outdegree.size(); ++i) {
+            if (outdegree[i] == 0 && done2[i]) {
+                q.push(i);
+                done2[i] = false;
+                break;
+            }
+        }
+    }
+}
+void toop(int n) {
+    for (int i = 1; i <= n; i++) {
+        if (indegree[i] == 0 && done1[i]) {
+            p.push(i);
+            done1[i] = false;
+        }
+    }
+    for (int i = 1; i <= n; i++) {
+        if (outdegree[i] == 0 && done2[i]) {
+            q.push(i);
+            done2[i] = false;
+        }
+    }
+    if (p.empty() || q.empty()) {
+        flag = false;
+    }
+    act();
+    while (!p.empty() && flag) {
+        int m = p.front();
+        p.pop();
+        for (auto t : graph[m]) {
+            indegree[t.first]--;
+        }
+        for (int i = 1; i <= n; ++i) {
+            if (indegree[i] == 0 && done1[i]) {
+                p.push(i);
+                done1[i] = false;
+                break;
+            }
+        }
+    }
+    while (!q.empty() && flag) {
+        int n = q.front();
+        q.pop();
+        for (auto k : graph) {
+            for (const auto& s : k.second) {
+                if (s.first == n) {
+                    outdegree[k.first]--;
+                }
+            }
+        }
+        for (int i = 1; i <= n; ++i) {
+            if (outdegree[i] == 0 && done2[i]) {
+                q.push(i);
+                done2[i] = false;
+                break;
+            }
+        }
+    }
+}
+
+
+
+void calculateCriticalPath(int n) {
+    vector<int> est(n + 1, 0);
+    vector<int> lst(n + 1, 9999999);
+
+    while (!result1.empty()) {
+        int node = result1.front();
+        result1.pop();
+        for (auto& next : graph[node]) {
+            est[next.first] = max(est[next.first], est[node] + next.second);
+        }
+    }
+    lst[n] = est[n];
+    while (!result2.empty()) {
+        int node = result2.front();
+        result2.pop();
+
+        for (auto& next : graph[node]) {
+            lst[node] = min(lst[node], lst[next.first] - next.second);
+        }
+    }
+    cout << est[n] << endl;
+    for (int node = 1; node <= n; ++node) {
+        for (const auto& next : graph[node]) {
+            int eft = est[node];
+            int lft = lst[next.first] - next.second;
+            if (eft == lft) {
+                cout << node << "->" << next.first << endl;
+            }
+        }
+    }
+
+
+}
+
+int main() {
+    int n, e;
+    cin >> n >> e;
+    flag = true;
+    indegree.resize(n + 1, 0);
+    outdegree.resize(n + 1, 0);
+    done1.resize(n + 1, true);
+    done2.resize(n + 1, true);
+    int a, b, c;
+    for (int i = 1; i <= e; i++) {
+        cin >> a >> b >> c;
+        add(a, b, c);
+        indegree[b]++;
+        outdegree[a]++;
+    }
+    toop(n);
+
+    if (!flag) {
+        cout << "unworkable project" << endl;
+    }
+    else {
+        calculateCriticalPath(n);
+    }
+    return 0;
+}

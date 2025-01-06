@@ -1,0 +1,84 @@
+#include <iostream>
+
+using namespace std;
+struct node {
+    int val;
+    node* next;
+    node(int value) : val(value), next(nullptr) {}
+};
+
+void insert(node*& head, int position, int value) {
+    node* newNode = new node(value);
+    if (position == 0 || head == nullptr) {
+        newNode->next = head;
+        head = newNode;
+    }
+    else {
+        node* current = head;
+        for (int i = 0; i < position - 1 && current->next != nullptr; i++) {
+            current = current->next;
+        }
+        newNode->next = current->next;
+        current->next = newNode;
+    }
+}
+
+void deletenode(node*& head, int position) {
+    if (position == 0) {
+        node* temp = head;
+        head = head->next;
+        delete temp;
+    }
+    else {
+        node* current = head;
+        for (int i = 0; i < position - 1 && current->next != nullptr; i++) {
+            current = current->next;
+        }
+        if (current->next == nullptr) {
+            return;
+        }
+        node* temp = current->next;
+        current->next = current->next->next;
+        delete temp;
+    }
+}
+
+void print(node* head) {
+    node* current = head;
+    while (current != nullptr) {
+        cout << current->val << " ";
+        current = current->next;
+    }
+}
+
+int main() {
+    int n, m, size;
+    cin >> n;
+    node* head = nullptr;
+    for (int i = 0; i < n; i++) {
+        int data;
+        cin >> data;
+        insert(head, i, data);
+    }
+    size = n;
+    cin >> m;
+    for (int i = 0; i < m; i++) {
+        int op, k, d;
+        cin >> op >> k;
+        if (op == 0) {
+            cin >> d;
+            if (k <= size) {
+                insert(head, k, d);
+                size++;
+            }
+        }
+        else if (op == 1) {
+            if (k <= size && k != 0) {
+                deletenode(head, k - 1);
+                size--;
+            }
+        }
+    }
+    print(head);
+    return 0;
+}

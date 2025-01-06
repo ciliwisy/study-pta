@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> path;
+vector<vector<int>> way;
+class tree {
+public:
+    int val;
+    tree* left;
+    tree* right;
+    tree(int value) : val(value), left(nullptr), right(nullptr) {}
+};
+void maketree(int value, tree*& root) {
+    int leftVal, rightVal;
+    cin >> leftVal;
+    if (leftVal != 0) {
+        root->left = new tree(leftVal);
+        maketree(leftVal, root->left);
+    }
+    cin >> rightVal;
+    if (rightVal != 0) {
+        root->right = new tree(rightVal);
+        maketree(rightVal, root->right);
+    }
+}
+
+void findpath(tree* root, int sum, vector<int>& path, vector<vector<int>>& way) {
+    if (root == nullptr) {
+        return;
+    }
+    sum -= root->val;
+    path.push_back(root->val);
+
+    if (root->left == nullptr && root->right == nullptr && sum == 0) {
+        way.push_back(path);
+    }
+
+    findpath(root->left, sum, path, way);
+    findpath(root->right, sum, path, way);
+
+    path.pop_back();
+}
+
+int main() {
+    tree* head = nullptr;
+    int rootVal;
+    cin >> rootVal;
+    head = new tree(rootVal);
+    maketree(rootVal, head);
+    int n;
+    cin >> n;
+    findpath(head, n, path, way);
+    cout << way.size() << endl;
+    for (vector<vector<int>>::reference p : way) {
+        for (int val : p) {
+            cout << val << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}

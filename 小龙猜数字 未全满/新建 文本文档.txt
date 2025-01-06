@@ -1,0 +1,32 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+long long calculateRank(const string& s) {
+    int n = s.length();
+    vector<int> pi(n, 0);
+    long long rankSum = 0;
+    for (int i = 1; i < n; ++i) {
+        int j = pi[i - 1];
+        while (j > 0 && s[i] != s[j]) {
+            j = pi[j - 1];
+        }
+        if (s[i] == s[j]) {
+            ++j;
+        }
+        pi[i] = j;
+        rankSum += i + 1 - j;
+    }
+    return rankSum + n;
+}
+
+int main() {
+    int length;
+    cin >> length;
+    string s;
+    cin >> s;
+    long long result = calculateRank(s);
+    cout << result << endl;
+    return 0;
+}
